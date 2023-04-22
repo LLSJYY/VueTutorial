@@ -1,28 +1,25 @@
 <template>
-  <v-app>
-    <v-navigation-drawer app> </v-navigation-drawer>
-    <v-app-bar app> </v-app-bar>
-    <v-main>
-      <v-container fluid>
-        <router-view>
-          <ul>
-            <li v-for="todo in todos" :key="todo.id">{{ todo.power }}</li>
-          </ul>
-        </router-view>
-      </v-container>
-    </v-main>
-    <v-footer app> </v-footer>
-  </v-app>
+  <input type="text" v-model="modelValue" @input="handlerInput" />
+  <button @click="addTodo">aa</button>
+  <ul>
+    <li v-for="todo in todos" :key="todo.id">
+      <input type="checkbox" v-model="todo.completed" @click="(e) => handlerCheck(e, todo)" />
+      {{ todo !== undefined ? todo.power : 'add' }}
+      <button @click="removeTodo(todo)">remove</button>
+    </li>
+  </ul>
 </template>
 
 <script lang="ts">
 type Todo = {
+  modelValue: string
   todos: ITodos[]
 }
 
 interface ITodos {
   id: number
-  power: number
+  power: string
+  completed: boolean
 }
 
 let id = 0
@@ -30,12 +27,26 @@ export default {
   name: 'Todo',
   data(): Todo {
     return {
-      todos: [
-        { id: id++, power: 10000 },
-        { id: id++, power: 9000 },
-        { id: id++, power: 7000 },
-        { id: id++, power: 8000 }
-      ]
+      modelValue: 'S', // modelvalue 에는 's' ,
+      todos: []
+    }
+  },
+  methods: {
+    handlerInput() {
+      console.log(this.modelValue) //속상하네..
+    },
+    addTodo() {
+      this.todos.push({ id: id++, power: this.modelValue, completed: false })
+    },
+    removeTodo(todo: any) {
+      this.todos = this.todos.filter((target) => target.id !== todo.id)
+    },
+    handlerCheck(e, todo) {
+      this.todos = this.todos.map((target) =>
+        target.id === todo.id ? { ...target, completed: !target.completed } : target
+      )
+
+      console.log(this.todos)
     }
   }
 }
